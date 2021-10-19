@@ -79,3 +79,62 @@ This Terraform file deploys a single server on Google Cloud Platform (GCP) using
   ```bash
   terraform destroy
   ```
+
+
+  Set up Google Cloud Platform (GCP) authentication for Terraform Cloud
+
+
+First of all, you will need to set up a service account in your GCP project in order for Terraform Cloud to be able to manage resources for you. Just do the following:
+
+    Log in to the GCP console and switch to the desired project.
+    Go to the IAM & Admin → Service accounts section.
+    Press the "Create service account" button.
+    Specify a meaningful name for your service account and click "Create and continue".
+    Specify a role for your service account. For test purposes you can use the Owner role with the maximum permissions. However, in production I would highly recommend to create a separate role for your service account with minimal possible permissions.
+    Then click "Done" to finally create the service account.
+    Now, select the newly created account from the list and go to the "KEYS" tab.
+    Press the "ADD KEY" button and select the "Create a new key" option.
+    Select the JSON format and press "CREATE".
+    Download the key file to your machine and open it in your favorite text editor.
+    The provided key is in multiline JSON format, however, in order to be able to use it in Terraform configuration it should be minified. You can use any JSON minifier that you can trust. Otherwise, you can use a "find & replace" functionality of your text editor to remove all multiline characters. In the end you should receive a JSON document as a single line of text, copy it.
+
+Now, you will need to specify the JSON key in your Terraform configuration. The most straightforward way to do so would be to put it directly in your google provider configuration under the credentials property. However, it is a VERY BAD practice to store such sensitive data in your code. We would do something else instead:
+
+    Add the following variable declaration to your Terraform configuration file:
+
+```bash
+variable "gcp_credentials" {
+  type = string
+  sensitive = true
+  description = "Google Cloud service account credentials"
+}
+```
+
+This will tell Terraform that this input variable actually exists and could be used to configure the stack.
+
+    Then, go to your Terraform Cloud console and switch to the desired workspace. Go to the "Variables" tab.
+
+    Now, press the "Add variable" button and specify the following data:
+        * Key: gcp_credentials
+        * Value: INSERT YOUR SINGLE-LINE JSON HERE
+        * Description: Google Cloud service account credentials
+        * Check the "Sensitive" checkbox.
+
+    Click the "Save variable button".
+
+Finally, update your provider configuration to look like this:
+
+```bash
+provider "google" {
+  project = "my-project-id"
+  credentials = var.gcp_credentials
+  region = "europe-west3"
+  zone = "europe-west3-a"
+}
+```
+
+Using this approach, your secret JSON key would be securely stored by the Terraform Cloud without the ability for anybody to read it directly (thanks to the "sensitive" option) and the key would be provided to the Google Provider at runtime by the means of Terraform input variable.
+
+However, be advised that it's not a bullet-proof way of storing secrets and there are situation when the content of the variable could be read by a party with the ability to update the configuration and read the log files.
+
+I would also recommend to move other information such as region/zone and project ID from the config file. This will make your stack more reusable and your configuration cleaner (by removing duplication).
