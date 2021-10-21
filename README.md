@@ -80,23 +80,22 @@ This Terraform file deploys a single server on Google Cloud Platform (GCP) using
   terraform destroy
   ```
 
-
-  Set up Google Cloud Platform (GCP) authentication for Terraform Cloud
+# Set up Google Cloud Platform (GCP) authentication for Terraform Cloud
 
 
 First of all, you will need to set up a service account in your GCP project in order for Terraform Cloud to be able to manage resources for you. Just do the following:
 
-    Log in to the GCP console and switch to the desired project.
-    Go to the IAM & Admin → Service accounts section.
-    Press the "Create service account" button.
-    Specify a meaningful name for your service account and click "Create and continue".
-    Specify a role for your service account. For test purposes you can use the Owner role with the maximum permissions. However, in production I would highly recommend to create a separate role for your service account with minimal possible permissions.
-    Then click "Done" to finally create the service account.
-    Now, select the newly created account from the list and go to the "KEYS" tab.
-    Press the "ADD KEY" button and select the "Create a new key" option.
-    Select the JSON format and press "CREATE".
-    Download the key file to your machine and open it in your favorite text editor.
-    The provided key is in multiline JSON format, however, in order to be able to use it in Terraform configuration it should be minified. You can use any JSON minifier that you can trust. Otherwise, you can use a "find & replace" functionality of your text editor to remove all multiline characters. In the end you should receive a JSON document as a single line of text, copy it.
+    * Log in to the GCP console and switch to the desired project.
+    * Go to the IAM & Admin → Service accounts section.
+    * Press the "Create service account" button.
+    * Specify a meaningful name for your service account and click "Create and continue".
+    * Specify a role for your service account. For test purposes you can use the Owner role with the maximum permissions. However, in production I would highly recommend to create a separate role for your service account with minimal possible permissions.
+    * Then click "Done" to finally create the service account.
+    *bNow, select the newly created account from the list and go to the "KEYS" tab.
+    * Press the "ADD KEY" button and select the "Create a new key" option.
+    * Select the JSON format and press "CREATE".
+    * Download the key file to your machine and open it in your favorite text editor.
+    * The provided key is in multiline JSON format, however, in order to be able to use it in Terraform configuration it should be minified. You can use any JSON minifier that you can trust. Otherwise, you can use a "find & replace" functionality of your text editor to remove all multiline characters. In the end you should receive a JSON document as a single line of text, copy it.
 
 Now, you will need to specify the JSON key in your Terraform configuration. The most straightforward way to do so would be to put it directly in your google provider configuration under the credentials property. However, it is a VERY BAD practice to store such sensitive data in your code. We would do something else instead:
 
