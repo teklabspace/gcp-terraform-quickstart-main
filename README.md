@@ -14,7 +14,7 @@ This Terraform file deploys a single server on Google Cloud Platform (GCP) using
 * You must have downloaded a Google Cloud Platform credentials file.
 * You must have enabled the Google Compute Engine API.
 * It uses the Terraform Google Cloud Provider that interacts with the many resources supported by Google Cloud Platform (GCP) through its APIs.
-* This code was written for Terraform 0.10.x.
+* This code was written for Terraform 1.x.x.
 
 ## Using the code
 
